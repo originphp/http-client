@@ -208,7 +208,7 @@ Other options:
 
 ## Working with Responses
 
-When you make a HTTP request, a response object is returned (this is different from the controller response object).
+When you make a HTTP request, a `Response` object is returned.
 
 ```php
 use Origin\HttpClient\Http;
