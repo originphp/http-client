@@ -1,0 +1,39 @@
+{
+    "name": "originphp/http-client",
+    "description": "OriginPHP HTTP Client",
+    "type": "library",
+    "keywords": [
+        "originphp",
+        "http",
+        "http client",
+        "rest",
+        "curl",
+        "client"
+    ],
+    "homepage": "https://www.originphp.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jamiel Sharief",
+            "email": "js@originphp.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Origin\\HttpClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Origin\\Test\\HttpClient\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.2.0",
+        "originphp/xml": "^1.0",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0"
+    }
+}
