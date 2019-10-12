@@ -7,7 +7,7 @@
     backupGlobals="true"
     >
     <testsuites>
-        <testsuite name="Origin Http Client">
+        <testsuite name="OriginPHP Http Client">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
