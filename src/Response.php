@@ -58,28 +58,32 @@ class Response
      * Sets and gets the response code
      *
      * @param integer $code
-     * @return int|void
+     * @return int|null
      */
-    public function statusCode(int $code = null)
+    public function statusCode(int $code = null) : ?int
     {
         if ($code === null) {
             return $this->statusCode;
         }
         $this->statusCode = $code;
+
+        return null;
     }
 
     /**
      * Sets or gets the body
      *
      * @param string $body
-     * @return string|void
+     * @return string|null
      */
-    public function body(string $body = null)
+    public function body(string $body = null) : ?string
     {
         if ($body === null) {
             return $this->body;
         }
         $this->body = $body;
+
+        return null;
     }
 
     /**
@@ -114,7 +118,7 @@ class Response
      * @param string $cookie
      * @return array|null
      */
-    public function cookies(string $cookie = null)
+    public function cookies(string $cookie = null) : ?array
     {
         if ($cookie === null) {
             return $this->cookies;

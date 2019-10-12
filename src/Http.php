@@ -16,10 +16,9 @@ declare(strict_types = 1);
 namespace Origin\HttpClient;
 
 use CURLFile;
-use Origin\HttpClient\Response;
-use Origin\HttpClient\Exception\NotFoundException;
-use Origin\Xml\Xml;
 use Exception;
+use Origin\Xml\Xml;
+use Origin\HttpClient\Exception\NotFoundException;
 
 class Http
 {
@@ -70,7 +69,7 @@ class Http
      */
     public function __construct(array $config = [])
     {
-        $config +=  [
+        $config += [
             'timeout' => 30,
             'redirect' => true,
             'cookieJar' => true, // if this is set to true then cookies persisted for instance only
@@ -118,7 +117,7 @@ class Http
      * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
      * - headers: an array of headers to set. e.g ['header'=>'value']
      * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-     *  @return \Origin\Utility\Http\Response
+     *  @return \Origin\HttpClient\Response
     */
     public function get(string $url, array $options = []) : Response
     {
@@ -142,7 +141,7 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-    *  @return \Origin\Utility\Http\Response
+    *  @return \Origin\HttpClient\Response
     */
     public function head(string $url, array $options = []) : Response
     {
@@ -167,7 +166,7 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-    *  @return \Origin\Utility\Http\Response
+    *  @return \Origin\HttpClient\Response
     */
     public function post(string $url, array $options = []) : Response
     {
@@ -192,7 +191,7 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-    *  @return \Origin\Utility\Http\Response
+    *  @return \Origin\HttpClient\Response
     */
     public function put(string $url, array $options = []) : Response
     {
@@ -216,7 +215,7 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-    * @return \Origin\Utility\Http\Response
+    * @return \Origin\HttpClient\Response
     */
     public function patch(string $url, array $options = []) : Response
     {
@@ -239,7 +238,7 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
-    * @return \Origin\Utility\Http\Response
+    * @return \Origin\HttpClient\Response
     */
     public function delete(string $url, array $options = []) : Response
     {
@@ -249,7 +248,7 @@ class Http
       * Sends the actual request through cURL
       *
       * @param array $options
-      * @return \Origin\Utility\Http\Response
+      * @return \Origin\HttpClient\Response
       */
     protected function send(array $options) : Response
     {
@@ -301,7 +300,7 @@ class Http
      * @param string $method
      * @param string $url
      * @param array $options
-     * @return \Origin\Utility\Http\Response
+     * @return \Origin\HttpClient\Response
      */
     protected function request(string $method, string $url, array $options = []) : Response
     {

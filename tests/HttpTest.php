@@ -12,11 +12,11 @@
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace Origin\Test\Utility;
+namespace Origin\Test\HttpClient;
 
+use Exception;
 use Origin\HttpClient\Http;
 use Origin\HttpClient\Response;
-use Exception;
 use Origin\HttpClient\Exception\NotFoundException;
 
 class MockHttp extends Http

@@ -12,9 +12,9 @@
  * @license     https://opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace Origin\Test\Utility;
+namespace Origin\Test\HttpClient;
 
-use Origin\HttpClient\Xml;
+use Origin\Xml\Xml;
 use Origin\HttpClient\Response;
 
 class ResponseTest extends \PHPUnit\Framework\TestCase
