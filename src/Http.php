@@ -17,7 +17,6 @@ namespace Origin\HttpClient;
 
 use CURLFile;
 use Exception;
-use Origin\Xml\Xml;
 use Origin\HttpClient\Exception\NotFoundException;
 
 class Http
