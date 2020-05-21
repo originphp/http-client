@@ -569,7 +569,8 @@ class Http
         $result = [];
         foreach ($headers as $header) {
             if (strpos($header, ':') !== false) {
-                list($header, $value) = explode(':', $header);
+                list($header, $value) = explode(':', $header, 2);
+                $value = trim($value);
             } else {
                 $value = null;
             }

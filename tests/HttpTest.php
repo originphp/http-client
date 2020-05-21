@@ -225,6 +225,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Response::class, $response);
         $this->assertTrue($response->ok());
         $this->assertNotEmpty($response->headers());
+        $this->assertEquals('application/json; charset=utf-8', $response->headers('content-type'));
         $this->assertEmpty($response->body());
     }
 
