@@ -59,7 +59,7 @@ class Response
      * @param integer $code
      * @return int|null
      */
-    public function statusCode(int $code = null) : ?int
+    public function statusCode(int $code = null): ?int
     {
         if ($code === null) {
             return $this->statusCode;
@@ -75,7 +75,7 @@ class Response
      * @param string $body
      * @return string|null
      */
-    public function body(string $body = null) : ?string
+    public function body(string $body = null): ?string
     {
         if ($body === null) {
             return $this->body;
@@ -117,7 +117,7 @@ class Response
      * @param string $cookie
      * @return array|null
      */
-    public function cookies(string $cookie = null) : ?array
+    public function cookies(string $cookie = null): ?array
     {
         if ($cookie === null) {
             return $this->cookies;
@@ -136,7 +136,7 @@ class Response
      * @param string $value
      * @return array
      */
-    public function header(string $header, string $value = null) : array
+    public function header(string $header, string $value = null): array
     {
         if ($value === null and strpos($header, ':') !== false) {
             list($header, $value) = explode(':', $header, 2);
@@ -157,7 +157,7 @@ class Response
      * @param mixed $value
      * @return void
      */
-    public function cookie(string $name, $value, array $options = []) :void
+    public function cookie(string $name, $value, array $options = []): void
     {
         $options += [
             'name' => $name,
@@ -176,7 +176,7 @@ class Response
      *
      * @return array|null
      */
-    public function json() : ?array
+    public function json(): ?array
     {
         return $this->body ? json_decode($this->body, true) : null;
     }
@@ -186,7 +186,7 @@ class Response
      *
      * @return array|null
      */
-    public function xml() : ?array
+    public function xml(): ?array
     {
         return $this->body ? Xml::toArray($this->body) : null;
     }
@@ -201,7 +201,7 @@ class Response
      *
      * @return boolean
      */
-    public function success() : bool
+    public function success(): bool
     {
         return in_array($this->statusCode(), [200,201,202,204]); // ok,created,accepted,no content
     }
@@ -211,7 +211,7 @@ class Response
      *
      * @return boolean
      */
-    public function redirect() : bool
+    public function redirect(): bool
     {
         return in_array($this->statusCode(), [301,302,303,304,307]); // moved,found,see other,not modified, temp redirect
     }
@@ -221,7 +221,7 @@ class Response
     *
     * @return boolean
     */
-    public function ok() : bool
+    public function ok(): bool
     {
         return $this->statusCode() === 200;
     }
