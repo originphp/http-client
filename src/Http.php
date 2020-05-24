@@ -117,7 +117,7 @@ class Http
      * - cookies: an array of cookies to set. e.g. ['name'=>'value']
      *  @return \Origin\HttpClient\Response
     */
-    public function get(string $url, array $options = []) : Response
+    public function get(string $url, array $options = []): Response
     {
         return $this->request('GET', $url, $options);
     }
@@ -141,7 +141,7 @@ class Http
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
     *  @return \Origin\HttpClient\Response
     */
-    public function head(string $url, array $options = []) : Response
+    public function head(string $url, array $options = []): Response
     {
         return $this->request('HEAD', $url, $options);
     }
@@ -166,7 +166,7 @@ class Http
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
     *  @return \Origin\HttpClient\Response
     */
-    public function post(string $url, array $options = []) : Response
+    public function post(string $url, array $options = []): Response
     {
         return $this->request('POST', $url, $options);
     }
@@ -191,7 +191,7 @@ class Http
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
     *  @return \Origin\HttpClient\Response
     */
-    public function put(string $url, array $options = []) : Response
+    public function put(string $url, array $options = []): Response
     {
         return $this->request('PUT', $url, $options);
     }
@@ -215,7 +215,7 @@ class Http
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
     * @return \Origin\HttpClient\Response
     */
-    public function patch(string $url, array $options = []) : Response
+    public function patch(string $url, array $options = []): Response
     {
         return $this->request('PATCH', $url, $options);
     }
@@ -238,7 +238,7 @@ class Http
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
     * @return \Origin\HttpClient\Response
     */
-    public function delete(string $url, array $options = []) : Response
+    public function delete(string $url, array $options = []): Response
     {
         return $this->request('DELETE', $url, $options);
     }
@@ -248,8 +248,11 @@ class Http
       * @param array $options
       * @return \Origin\HttpClient\Response
       */
-    protected function send(array $options) : Response
+    protected function send(array $options): Response
     {
+        $headers = [];
+        $body = '';
+        
         $curl = curl_init();
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
@@ -265,9 +268,12 @@ class Http
         # Process Curl Response
         $info = curl_getinfo($curl);
         $code = $info['http_code'];
-      
-        list($headers, $body) = $this->parseResponse($curl, $response);
-       
+ 
+        // parse string responses, using CURLOPT_FILE will return bool
+        if (is_string($response)) {
+            list($headers, $body) = $this->parseResponse($curl, $response);
+        }
+
         $cookies = $this->parseCookies($headers);
         $headers = $this->normalizeHeaders($headers);
 
@@ -300,7 +306,7 @@ class Http
      * @param array $options
      * @return \Origin\HttpClient\Response
      */
-    protected function request(string $method, string $url, array $options = []) : Response
+    protected function request(string $method, string $url, array $options = []): Response
     {
         $options += $this->config;
         $url = $this->buildUrl($url, $options);
@@ -313,7 +319,7 @@ class Http
      * Returns a cURL file object
      * @return \CURLFile
      */
-    public static function file(string $filename) : CURLFile
+    public static function file(string $filename): CURLFile
     {
         if (! file_exists($filename)) {
             throw new NotFoundException("{$filename} could not be found");
@@ -330,7 +336,7 @@ class Http
      * @param array $options
      * @return array
      */
-    protected function buildRequestHeaders(array $options) : array
+    protected function buildRequestHeaders(array $options): array
     {
         // Process headers
         $cookies = [];
@@ -373,7 +379,7 @@ class Http
      * @param array $options
      * @return array
      */
-    protected function buildOptions(string $method, string $url, array $options) : array
+    protected function buildOptions(string $method, string $url, array $options): array
     {
         $out = [
             CURLOPT_URL => $url,
@@ -475,7 +481,7 @@ class Http
      * @param array $options
      * @return string
      */
-    protected function buildUrl(string $url, array $options) : string
+    protected function buildUrl(string $url, array $options): string
     {
         if (! empty($options['base'])) {
             $url = $options['base'] . $url;
@@ -494,7 +500,7 @@ class Http
       * @param string $response
       * @return array
       */
-    protected function parseResponse($ch, string $response) : array
+    protected function parseResponse($ch, $response): array
     {
         // Parse Response
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -508,7 +514,7 @@ class Http
     /**
      * Parses the cookies from headers.
      */
-    protected function parseCookies(array &$headers) : array
+    protected function parseCookies(array &$headers): array
     {
         $cookies = [];
         foreach ($headers as $i => $header) {
@@ -529,7 +535,7 @@ class Http
      * @param string $header line e.g. Set-Cookie: foo=bar;
      * @return array
      */
-    protected function parseCookie(string $header) : array
+    protected function parseCookie(string $header): array
     {
         list($void, $cookie) = explode('Set-Cookie: ', $header);
         $cookie = explode('; ', $cookie);
@@ -564,12 +570,13 @@ class Http
      * @param array $headers
      * @return array $result
      */
-    protected function normalizeHeaders(array $headers) : array
+    protected function normalizeHeaders(array $headers): array
     {
         $result = [];
+      
         foreach ($headers as $header) {
             if (strpos($header, ':') !== false) {
-                list($header, $value) = explode(':', $header, 2);
+                list($header, $value) = explode(':', $header);
                 $value = trim($value);
             } else {
                 $value = null;
