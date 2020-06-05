@@ -181,6 +181,7 @@ The available options when making requests are
 ## Configuring the Http Client
 
 You configure Http client so that you don't have to keep on passing options which makes code longer and more prone to errors. 
+
 This is particularly useful when working with multiple requests in an instance. Any options passed when creating the instance will be used as default for each request, unless you specify something else during the request.
 
 
@@ -205,6 +206,35 @@ Other options:
 - cookies
 - verbose
 
+## Exceptions (version ^2.0)
+
+In 2.0 various exceptions have been added, and a HTTP protocol error handler has also been added. All exceptions from the http client extend the `HttpClientException` class.
+
+### Request Exceptions
+
+In the event of connection issues (DNS, timeout etc), a `ConnectionException` will be thrown, and a `TooManyRedirectsException` will be thrown on redirect loops, and any other cURL error will trigger a generic `RequestException`.
+
+### HTTP Protocol Exceptions
+
+By default any 4xx and 5xx errors will throw either `ClientErrorException` or `ServerErrorException` which both extend the `HttpException` class.
+
+This behavior can be disabled by setting `httpErrors` to `false` when creating the `Http` instance. 
+
+```php
+$http = new Http([
+    'httpErrors' => false
+]);
+```
+
+To catch HTTP protocol errors
+
+```php
+try {
+    (new Http())->get('http://wwww.google.com');
+} catch (HttpException $exception) {
+    // do something
+}
+```
 
 ## Working with Responses
 
