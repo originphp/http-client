@@ -20,6 +20,6 @@ use Exception;
  * This exception is for files that are not found when
  * using them. (This is not for Http NotFoundException)
  */
-class NotFoundException extends Exception
+class NotFoundException extends HttpClientException
 {
 }
