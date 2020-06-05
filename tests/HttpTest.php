@@ -14,9 +14,14 @@
 namespace Origin\Test\HttpClient;
 
 use Exception;
+use Origin\HttpClient\Exception\ClientErrorException;
+use Origin\HttpClient\Exception\ConnectionException;
 use Origin\HttpClient\Http;
 use Origin\HttpClient\Response;
 use Origin\HttpClient\Exception\NotFoundException;
+use Origin\HttpClient\Exception\RequestException;
+use Origin\HttpClient\Exception\ServerErrorException;
+use Origin\HttpClient\Exception\TooManyRedirectsException;
 
 class MockHttp extends Http
 {
@@ -296,7 +301,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
 
     public function testDelete()
     {
-        $http = new Http();
+        $http = new Http(['httpErrors'=>false]);
   
         $response = $http->delete('https://jsonplaceholder.typicode.com/posts/1');
         $this->assertInstanceOf(Response::class, $response);
@@ -316,5 +321,62 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($cookies['region']['value']);
         $this->assertNotEmpty($http->cookies('region'));
         $this->assertNull($http->cookies('password'));
+    }
+
+    public function testConnectionException()
+    {
+        $this->expectException(ConnectionException::class);
+        (new Http())->get('http://www.some-domain-that-does-not-exist');
+    }
+    public function testRequestException()
+    {
+        // RequestException: Protocol "like" not supported or disabled in libcurl
+        $this->expectException(RequestException::class);
+        (new Http())->get('like://www.originphp.com');
+    }
+
+    public function testClientException()
+    {
+        // ClientException: 404 Not Found
+        $this->expectException(ClientErrorException::class);
+        (new Http())->get('https://www.example.com/some-page-that-does-not-exist');
+    }
+
+    /**
+     * I placed a custom file on the server
+     *
+     * <?php
+     * header("HTTP/1.0 500 Internal Server Error");
+     * http_response_code(500);
+     *
+     * @return void
+     */
+    public function testServerException()
+    {
+        $this->expectException(ServerErrorException::class);
+        (new Http())->get('https://www.originphp.com/500.php', [
+            'curl' => [
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0
+                ]
+        ]);
+    }
+
+    /**
+     * Added redirect.php
+     *
+     * < ? php header("Location: https://www.originphp.com/redirect.php"); ?>
+     *
+     * @return void
+     */
+    public function testToManyRedirectsException()
+    {
+        $this->expectException(TooManyRedirectsException::class);
+        (new Http())->get('https://www.originphp.com/redirect.php', [
+            'curl' => [
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0
+                ]
+        ]);
     }
 }

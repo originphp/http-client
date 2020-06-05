@@ -16,7 +16,12 @@ namespace Origin\HttpClient;
 
 use CURLFile;
 use Exception;
+use Origin\HttpClient\Exception\ClientErrorException;
+use Origin\HttpClient\Exception\ConnectionException;
 use Origin\HttpClient\Exception\NotFoundException;
+use Origin\HttpClient\Exception\RequestException;
+use Origin\HttpClient\Exception\ServerErrorException;
+use Origin\HttpClient\Exception\TooManyRedirectsException;
 
 class Http
 {
@@ -42,6 +47,54 @@ class Http
      * @var array
      */
     protected $cookies = [];
+
+    /**
+     * @var array
+     */
+    private $statusCodes = [
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Payload Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        418 => 'I\'m a teapot',
+        421 => 'Misdirected Request',
+        422 => 'Unprocessable Entity',
+        423 => 'Locked',
+        424 => 'Failed Dependency',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        444 => 'Connection Closed Without Response',
+        451 => 'Unavailable For Legal Reasons',
+        499 => 'Client Closed Request',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        506 => 'Variant Also Negotiates',
+        507 => 'Insufficient Storage',
+        508 => 'Loop Detected',
+        510 => 'Not Extended',
+        511 => 'Network Authentication Required',
+        599 => 'Network Connect Timeout Error'
+    ];
  
     /**
      * Constructor
@@ -55,6 +108,7 @@ class Http
      * - type: json/xml
      * - auth (username, password, type)
      * - proxy (username, password,proxy)
+     * - httpErrors: default:true. Set to false to disable throwing exceptions on HTTP protocol errors 4xx and 5xx.
      *
      * - referer
      * - curl: curl options
@@ -72,6 +126,7 @@ class Http
             'redirect' => true,
             'cookieJar' => true, // if this is set to true then cookies persisted for instance only
             'verbose' => false,
+            'httpErrors' => true
         ];
         $this->config = $config;
         if ($this->config['cookieJar'] === true) {
@@ -261,13 +316,24 @@ class Http
             $errorMessage = curl_error($curl);
             $status = ($code === CURLE_OPERATION_TIMEOUTED)?500:504; // error 500 or gateway timeout
             curl_close($curl);
+
+            if (in_array($code, [CURLE_COULDNT_RESOLVE_PROXY,CURLE_COULDNT_RESOLVE_HOST,CURLE_COULDNT_CONNECT,CURLE_OPERATION_TIMEDOUT])) {
+                throw new ConnectionException($errorMessage, $status);
+            }
+            if ($code === CURLE_TOO_MANY_REDIRECTS) {
+                throw new TooManyRedirectsException($errorMessage, $status);
+            }
             
-            throw new Exception("cURL Error: {$errorMessage}", $status);
+            throw new RequestException($errorMessage, $status);
         }
 
         # Process Curl Response
         $info = curl_getinfo($curl);
         $code = $info['http_code'];
+
+        if ($this->config['httpErrors']) {
+            $this->httpErrorHandler($code);
+        }
  
         // parse string responses, using CURLOPT_FILE will return bool
         if (is_string($response)) {
@@ -299,6 +365,23 @@ class Http
     }
 
     /**
+     * HTTP protocol error handler function
+     *
+     * @param integer $code
+     * @return void
+     */
+    private function httpErrorHandler(int $code) : void
+    {
+        if ($code >= 400 && $code <= 599) {
+            $message = $this->statusCodes[$code] ? $code . ' ' . $this->statusCodes[$code] : 'HTTP Error ' . $code;
+            if ($code >= 400 && $code <= 499) {
+                throw new ClientErrorException($message, $code);
+            }
+            throw new ServerErrorException($message, $code);
+        }
+    }
+
+    /**
      * Builds the request
      *
      * @param string $method
@@ -310,6 +393,7 @@ class Http
     {
         $options += $this->config;
         $url = $this->buildUrl($url, $options);
+         
         $options = $this->buildOptions(strtoupper($method), $url, $options);
 
         return $this->send($options);
