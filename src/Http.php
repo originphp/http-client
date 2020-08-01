@@ -291,6 +291,8 @@ class Http
     * - curl: an array of curl options either string or constant e.g [CURLOPT_SSL_VERIFYHOST=>0, 'ssl_verifypeer'=>0]
     * - headers: an array of headers to set. e.g ['header'=>'value']
     * - cookies: an array of cookies to set. e.g. ['name'=>'value']
+    * - httpErrors: default:true If set to true, any 4xx and 5xx errors will throw either ClientErrorException or
+    *               ServerErrorException which both extend the HttpException class.
     * @return \Origin\HttpClient\Response
     */
     public function delete(string $url, array $options = []): Response
