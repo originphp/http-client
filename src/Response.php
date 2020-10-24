@@ -172,7 +172,7 @@ class Response
     }
 
     /**
-     * Gets the body as json
+     * Converts a JSON response to an array
      *
      * @return array|null
      */
@@ -182,7 +182,7 @@ class Response
     }
 
     /**
-     * Gets the body as xml array
+     * Converts an XML response to an array
      *
      * @return array|null
      */
