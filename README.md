@@ -66,7 +66,7 @@ $response = $http->head('https://api.example.com/posts',[
 
 ### Post Request
 
-> As 2.1 `fields` has been deprecated use `data` instead
+> As version 2.1 `fields` has been deprecated use `data` instead
 
 To send a POST request. In REST terms post requests are used to create a record.
 
@@ -120,7 +120,7 @@ $response = $http->post('https://api.example.com/posts',[
 
 ### Put Request
 
-> As 2.1 `fields` has been deprecated use `data` instead
+> As version 2.1 `fields` has been deprecated use `data` instead
 
 To send a PUT request. In REST terms put requests are used to modify a record with complete data (overwriting).
 
@@ -137,7 +137,7 @@ $response = $http->put('https://api.example.com/posts/1',[
 
 ### Patch Request
 
-> As 2.1 `fields` has been deprecated use `data` instead
+> As version 2.1 `fields` has been deprecated use `data` instead
 
 To send a PATCH request. In REST terms patch requests are used to modify an existing record with partial data.
 
