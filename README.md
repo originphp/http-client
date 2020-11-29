@@ -251,10 +251,10 @@ use Origin\HttpClient\Http;
 $http = new Http();
 $response = $http->head('https://api.example.com/posts');
 
-// working with the body
-$body = $response->body();
-$json = $response->json(); // decodes a json string into an array
-$xml = $response->xml(); // converts xml into an array
+// working with the response body
+$data = $response->body();
+$data = $response->json(); // decodes a JSON response into an array
+$data = $response->xml(); // converts XML response into an array
 
 // Response stuff
 $headers = $response->headers(); // headers
