@@ -14,12 +14,12 @@
 namespace Origin\Test\HttpClient;
 
 use Exception;
-use Origin\HttpClient\Exception\ClientErrorException;
-use Origin\HttpClient\Exception\ConnectionException;
 use Origin\HttpClient\Http;
 use Origin\HttpClient\Response;
-use Origin\HttpClient\Exception\NotFoundException;
 use Origin\HttpClient\Exception\RequestException;
+use Origin\HttpClient\Exception\NotFoundException;
+use Origin\HttpClient\Exception\ConnectionException;
+use Origin\HttpClient\Exception\ClientErrorException;
 use Origin\HttpClient\Exception\ServerErrorException;
 use Origin\HttpClient\Exception\TooManyRedirectsException;
 
@@ -145,18 +145,18 @@ class HttpTest extends \PHPUnit\Framework\TestCase
     {
         $http = new MockHttp();
         $http->post('https://www.example.com/posts', [
-            'fields' => ['title' => 'Article title','body' => 'Article body'],
+            'data' => ['title' => 'Article title','body' => 'Article body'],
         ]);
         $this->assertEquals('title=Article+title&body=Article+body', $http->options(CURLOPT_POSTFIELDS));
 
         $http->post('https://www.example.com/posts', [
-            'fields' => ['title' => 'Article title','body' => 'Article body'],
+            'data' => ['title' => 'Article title','body' => 'Article body'],
             'type' => 'json',
         ]);
         $this->assertEquals('{"title":"Article title","body":"Article body"}', $http->options(CURLOPT_POSTFIELDS));
 
         $http->post('https://www.example.com/upload', [
-            'fields' => ['file' => '@' . dirname(__DIR__) . '/README.md'],
+            'data' => ['file' => '@' . dirname(__DIR__) . '/README.md'],
         ]);
         $this->assertStringContainsString(
             '%2FREADME.md&file%5Bmime%5D=text%2Fplain&file%5Bpostname%5D=README.md',
@@ -165,7 +165,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
 
         $this->expectException(NotFoundException::class);
         $http->post('https://www.example.com/upload', [
-            'fields' => ['file' => '@/does_not_exist/passwords.txt'],
+            'data' => ['file' => '@/does_not_exist/passwords.txt'],
         ]);
     }
 
@@ -253,13 +253,11 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         $response = $http->get('https://foozer');
     }
 
+  
     public function testPost()
     {
-        $http = new Http();
-        $data = ['title' => 'curl post test','body' => 'A simple test for curl posting','userId' => 1234];
-        
-        $response = $http->post('https://jsonplaceholder.typicode.com/posts', [
-            'fields' => $data,
+        $response = (new Http)->post('https://jsonplaceholder.typicode.com/posts', [
+            'data' => ['title' => 'curl post test','body' => 'A simple test for curl posting','userId' => 1234]
         ]);
  
         $this->assertInstanceOf(Response::class, $response);
@@ -271,12 +269,14 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('A simple test for curl posting', $result->body);
     }
 
+    
+
     public function testPut()
     {
         $http = new Http();
         $data = ['title' => 'curl put test','body' => 'A simple test for curl putting','userId' => 1234];
         
-        $response = $http->put('https://jsonplaceholder.typicode.com/posts/1', ['fields' => $data]);
+        $response = $http->put('https://jsonplaceholder.typicode.com/posts/1', ['data' => $data]);
         $this->assertInstanceOf(Response::class, $response);
       
         $result = json_decode($response->body()); // test using body
@@ -291,7 +291,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         $http = new Http();
         $data = ['title' => 'curl patch test'];
         
-        $response = $http->patch('https://jsonplaceholder.typicode.com/posts/1', ['fields' => $data]);
+        $response = $http->patch('https://jsonplaceholder.typicode.com/posts/1', ['data' => $data]);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertTrue($response->success());
         $result = json_decode($response->body()); // test using body
@@ -301,7 +301,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
 
     public function testDelete()
     {
-        $http = new Http(['httpErrors'=>false]);
+        $http = new Http(['httpErrors' => false]);
   
         $response = $http->delete('https://jsonplaceholder.typicode.com/posts/1');
         $this->assertInstanceOf(Response::class, $response);
@@ -358,7 +358,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_SSL_VERIFYPEER => 0
-                ]
+            ]
         ]);
     }
 
@@ -376,7 +376,43 @@ class HttpTest extends \PHPUnit\Framework\TestCase
             'curl' => [
                 CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_SSL_VERIFYPEER => 0
-                ]
+            ]
         ]);
+    }
+
+    public function testFieldDeprecation()
+    {
+        $this->deprecated(function () {
+            $response = (new Http)->post('https://jsonplaceholder.typicode.com/posts', [
+                'fields' => ['title' => 'curl post test','body' => 'A simple test for curl posting','userId' => 1234]
+            ]);
+     
+            $this->assertInstanceOf(Response::class, $response);
+            $this->assertTrue($response->success());
+            $this->assertFalse($response->redirect());
+            $result = json_decode($response->body()); // test using body
+            $this->assertEquals(101, $result->id);
+            $this->assertEquals('curl post test', $result->title);
+            $this->assertEquals('A simple test for curl posting', $result->body);
+        });
+    }
+
+    /**
+    * Executes code that has been deprecated without trigering the
+    * deprecation warning.
+    *
+    * @example
+    *
+    *  $this->deprecated(function () {
+    *      $object = new CustoObject();
+    *      $this->assertTrue($object->dontUse());
+    *  });
+    */
+    public function deprecated(callable $callable)
+    {
+        $level = error_reporting();
+        error_reporting(E_ALL & ~E_USER_DEPRECATED);
+        $callable();
+        error_reporting($level);
     }
 }

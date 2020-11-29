@@ -1,7 +1,7 @@
 # HTTP Client
 
 ![license](https://img.shields.io/badge/license-MIT-brightGreen.svg)
-[![build](https://travis-ci.org/originphp/http-client.svg?branch=master)](https://travis-ci.org/originphp/http-client)
+[![build](https://travis-ci.com/originphp/http-client.svg?branch=master)](https://travis-ci.com/originphp/http-client)
 [![coverage](https://coveralls.io/repos/github/originphp/http-client/badge.svg?branch=master)](https://coveralls.io/github/originphp/http-client?branch=master)
 
 The HTTP client is a simple yet very powerful utility for making HTTP requests.
@@ -66,6 +66,8 @@ $response = $http->head('https://api.example.com/posts',[
 
 ### Post Request
 
+> As 2.1 `fields` has been deprecated use `data` instead
+
 To send a POST request. In REST terms post requests are used to create a record.
 
 ```php
@@ -77,7 +79,7 @@ $response = $http->post('https://api.example.com/posts');
 
 // to send a post request with data
 $response = $http->post('https://api.example.com/posts',[
-    'fields' => [
+    'data' => [
         'title' => 'Article Title',
         'body' => 'Article body'
     ]
@@ -85,7 +87,7 @@ $response = $http->post('https://api.example.com/posts',[
 
 // example with other options
 $response = $http->post('https://api.example.com/posts',[
-    'fields' => [
+    'data' => [
         'title' => 'Article Title',
         'body' => 'Article body'
     ],
@@ -103,14 +105,14 @@ To upload files using a post request.
 use Origin\HttpClient\Http;
 $http = new Http();
 $response = $http->post('https://api.example.com/posts',[
-    'fields' => [
+    'data' => [
         'contacts' => Http::file('/docs/contacts.csv')
     ]
 ]);
 
 // Shortcut for Http::file
 $response = $http->post('https://api.example.com/posts',[
-    'fields' => [
+    'data' => [
         'contacts' => '@/docs/contacts.csv'
     ]
 ]);
@@ -118,13 +120,15 @@ $response = $http->post('https://api.example.com/posts',[
 
 ### Put Request
 
+> As 2.1 `fields` has been deprecated use `data` instead
+
 To send a PUT request. In REST terms put requests are used to modify a record with complete data (overwriting).
 
 ```php
 use Origin\HttpClient\Http;
 $http = new Http();
 $response = $http->put('https://api.example.com/posts/1',[
-    'fields' => [
+    'data' => [
         'title' => 'Changed Article Title',
         'body' => 'Article body'
     ],
@@ -133,13 +137,15 @@ $response = $http->put('https://api.example.com/posts/1',[
 
 ### Patch Request
 
+> As 2.1 `fields` has been deprecated use `data` instead
+
 To send a PATCH request. In REST terms patch requests are used to modify an existing record with partial data.
 
 ```php
 use Origin\HttpClient\Http;
 $http = new Http();
 $response = $http->patch('https://api.example.com/posts/1',[
-     'fields' => [
+     'data' => [
         'title' => 'Another Article Title',
     ],
 ]);

@@ -15,11 +15,10 @@ declare(strict_types = 1);
 namespace Origin\HttpClient;
 
 use CURLFile;
-use Exception;
-use Origin\HttpClient\Exception\ClientErrorException;
-use Origin\HttpClient\Exception\ConnectionException;
-use Origin\HttpClient\Exception\NotFoundException;
 use Origin\HttpClient\Exception\RequestException;
+use Origin\HttpClient\Exception\NotFoundException;
+use Origin\HttpClient\Exception\ConnectionException;
+use Origin\HttpClient\Exception\ClientErrorException;
 use Origin\HttpClient\Exception\ServerErrorException;
 use Origin\HttpClient\Exception\TooManyRedirectsException;
 
@@ -372,7 +371,7 @@ class Http
      * @param integer $code
      * @return void
      */
-    private function httpErrorHandler(int $code) : void
+    private function httpErrorHandler(int $code): void
     {
         if ($code >= 400 && $code <= 599) {
             $message = $this->statusCodes[$code] ? $code . ' ' . $this->statusCodes[$code] : 'HTTP Error ' . $code;
@@ -431,7 +430,7 @@ class Http
                 $cookies[] = rawurlencode($cookie['name']) . '=' . rawurlencode($cookie['value']);
             }
         }
-        if (! empty($options['cookies']) and is_array($options['cookies'])) {
+        if (! empty($options['cookies']) && is_array($options['cookies'])) {
             foreach ($options['cookies'] as $name => $value) {
                 $cookies[] = rawurlencode($name) . '=' . rawurlencode($value);
                 $this->cookies[$name] = ['name' => $name,'value' => $value];
@@ -442,7 +441,7 @@ class Http
             $options['headers']['Cookie'] = implode('; ', $cookies);
         }
 
-        if (! empty($options['type']) and in_array($options['type'], ['json','xml'])) {
+        if (! empty($options['type']) && in_array($options['type'], ['json','xml'])) {
             $type = 'application/' . $options['type'];
             $options['headers']['Content-Type'] = $options['headers']['Accept'] = $type;
         }
@@ -508,24 +507,31 @@ class Http
         }
 
         if (in_array($method, ['POST','PUT','PATCH'])) {
-            if (! empty($options['fields']) and is_array($options['fields'])) {
-                foreach ($options['fields'] as $key => $value) {
-                    if (is_string($value) and substr($value, 0, 1) === '@') {
-                        $options['fields'][$key] = Http::file(substr($value, 1));
+
+            // backwards compatability
+            if (! empty($options['fields'])) {
+                $options['data'] = $options['fields'];
+                trigger_error("Http client 'fields' option has been deprecated use 'data' instead", E_USER_DEPRECATED);
+            }
+
+            if (! empty($options['data']) && is_array($options['data'])) {
+                foreach ($options['data'] as $key => $value) {
+                    if (is_string($value) && substr($value, 0, 1) === '@') {
+                        $options['data'][$key] = Http::file(substr($value, 1));
                     }
                 }
-                if (! empty($options['type']) and $options['type'] === 'json') {
-                    $out[CURLOPT_POSTFIELDS] = json_encode($options['fields']);
+                if (! empty($options['type']) && $options['type'] === 'json') {
+                    $out[CURLOPT_POSTFIELDS] = json_encode($options['data']);
                 } else {
                     // Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data,
                     // while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
                     // Post not working on the other. Probably missing header?
-                    $out[CURLOPT_POSTFIELDS] = http_build_query($options['fields']);
+                    $out[CURLOPT_POSTFIELDS] = http_build_query($options['data']);
                 }
             }
         }
 
-        if (! empty($options['cookieJar']) and is_string($options['cookieJar'])) {
+        if (! empty($options['cookieJar']) && is_string($options['cookieJar'])) {
             $out[CURLOPT_COOKIEFILE] = $options['cookieJar'];
             $out[CURLOPT_COOKIEJAR] = $options['cookieJar'];
         }
@@ -545,7 +551,7 @@ class Http
             }
         }
        
-        if (isset($options['curl']) and is_array($options['curl'])) {
+        if (isset($options['curl']) && is_array($options['curl'])) {
             foreach ($options['curl'] as $key => $value) {
                 if (is_string($key)) {
                     if (stripos($key, 'CURLOPT_') === false) {
@@ -573,7 +579,7 @@ class Http
             $url = $options['base'] . $url;
         }
         
-        if (! empty($options['query']) and is_array($options['query'])) {
+        if (! empty($options['query']) && is_array($options['query'])) {
             $url .= '?' . http_build_query($options['query']);
         }
 
