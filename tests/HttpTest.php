@@ -379,40 +379,4 @@ class HttpTest extends \PHPUnit\Framework\TestCase
             ]
         ]);
     }
-
-    public function testFieldDeprecation()
-    {
-        $this->deprecated(function () {
-            $response = (new Http)->post('https://jsonplaceholder.typicode.com/posts', [
-                'fields' => ['title' => 'curl post test','body' => 'A simple test for curl posting','userId' => 1234]
-            ]);
-     
-            $this->assertInstanceOf(Response::class, $response);
-            $this->assertTrue($response->success());
-            $this->assertFalse($response->redirect());
-            $result = json_decode($response->body()); // test using body
-            $this->assertEquals(101, $result->id);
-            $this->assertEquals('curl post test', $result->title);
-            $this->assertEquals('A simple test for curl posting', $result->body);
-        });
-    }
-
-    /**
-    * Executes code that has been deprecated without trigering the
-    * deprecation warning.
-    *
-    * @example
-    *
-    *  $this->deprecated(function () {
-    *      $object = new CustoObject();
-    *      $this->assertTrue($object->dontUse());
-    *  });
-    */
-    public function deprecated(callable $callable)
-    {
-        $level = error_reporting();
-        error_reporting(E_ALL & ~E_USER_DEPRECATED);
-        $callable();
-        error_reporting($level);
-    }
 }

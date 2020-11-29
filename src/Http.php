@@ -507,13 +507,6 @@ class Http
         }
 
         if (in_array($method, ['POST','PUT','PATCH'])) {
-
-            // backwards compatability
-            if (! empty($options['fields'])) {
-                $options['data'] = $options['fields'];
-                trigger_error("Http client 'fields' option has been deprecated use 'data' instead", E_USER_DEPRECATED);
-            }
-
             if (! empty($options['data']) && is_array($options['data'])) {
                 foreach ($options['data'] as $key => $value) {
                     if (is_string($value) && substr($value, 0, 1) === '@') {
