@@ -90,8 +90,7 @@ class ResponseTest extends \PHPUnit\Framework\TestCase
     public function testToString()
     {
         $response = new Response();
-        $this->assertNull($response->__toString());
         $response->body('hello world');
-        $this->assertEquals('hello world', $response->__toString());
+        $this->assertEquals('hello world', (string) $response);
     }
 }
