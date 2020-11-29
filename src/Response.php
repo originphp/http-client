@@ -191,6 +191,9 @@ class Response
         return $this->body ? Xml::toArray($this->body) : null;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->body;
