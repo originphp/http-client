@@ -1,7 +1,7 @@
 # HTTP Client
 
 ![license](https://img.shields.io/badge/license-MIT-brightGreen.svg)
-[![build](https://travis-ci.com/originphp/http-client.svg?branch=master)](https://travis-ci.com/originphp/http-client)
+[![build](https://github.com/originphp/http-client/workflows/CI/badge.svg)](https://github.com/originphp/http-client/actions)
 [![coverage](https://coveralls.io/repos/github/originphp/http-client/badge.svg?branch=master)](https://coveralls.io/github/originphp/http-client?branch=master)
 
 The HTTP client is a simple yet very powerful utility for making HTTP requests.
