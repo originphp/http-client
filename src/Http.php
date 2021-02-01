@@ -513,7 +513,9 @@ class Http
                         $options['data'][$key] = Http::file(substr($value, 1));
                     }
                 }
-                if (! empty($options['type']) && $options['type'] === 'json') {
+                $isJson = isset($options['headers']['Content-Type']) && $options['headers']['Content-Type'] === 'application/json';
+                
+                if ($isJson || (! empty($options['type']) && $options['type'] === 'json')) {
                     $out[CURLOPT_POSTFIELDS] = json_encode($options['data']);
                 } else {
                     // Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data,

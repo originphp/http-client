@@ -155,6 +155,14 @@ class HttpTest extends \PHPUnit\Framework\TestCase
         ]);
         $this->assertEquals('{"title":"Article title","body":"Article body"}', $http->options(CURLOPT_POSTFIELDS));
 
+        // test detect
+        $http->post('https://www.example.com/posts', [
+            'data' => ['title' => 'Article title','body' => 'Article body'],
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
+        $this->assertEquals('{"title":"Article title","body":"Article body"}', $http->options(CURLOPT_POSTFIELDS));
+
+
         $http->post('https://www.example.com/upload', [
             'data' => ['file' => '@' . dirname(__DIR__) . '/README.md'],
         ]);
