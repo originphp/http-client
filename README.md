@@ -322,6 +322,25 @@ $http = new Http([
     ]);
 ```
 
+### Downloading a file
+
+To download a file
+
+```php
+$path =  '/var/www/file.tar.gz';
+$fp = fopen($path, 'w');
+
+$http = new Http();
+$response = $http->get('https://example.com/file.tar.gz',[
+    'curl' => [
+        CURLOPT_HEADER => false,
+        CURLOPT_FILE => $fp
+    ]
+]);
+
+fclose($fp);
+```
+
 ### Setting Cookies
 
 To set a cookie
